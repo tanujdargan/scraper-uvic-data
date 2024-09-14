@@ -17,7 +17,7 @@ A Python script to scrape course information from the University of Victoria's C
 
 ### Prerequisites
 
-#### Note: This script was developed and tested on Python 3.12.2 compatibility is not guaranteed on other versions. ALthough there should be no issues with future or older versions of python.
+#### Note: This script was developed and tested on Python 3.12.2 compatibility is not guaranteed on other versions. Although there should be no issues with future or older versions of python.
 
 - **Python 3.x** installed on your system.
 - Required Python packages:
