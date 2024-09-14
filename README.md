@@ -24,6 +24,8 @@ A Python script to scrape course information from the University of Victoria's C
   - `requests`
   - `beautifulsoup4`
 
+If you wish to use concurrent requests then you will also need to do `pip install aiohttp`
+
 You can install the required packages using pip:
 
 ```bash
