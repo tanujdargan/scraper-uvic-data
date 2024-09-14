@@ -53,18 +53,23 @@ Use the test file for development otherwise leave it as is.
 Navigate to the directory containing the script and run the script using Python:
 
 ##### There are 3 main scraper scripts:
-1) scraper.py (Slowest, Conservative approach, Highest delays and no concurrency)
+1) scraper.py (Slowest, Conservative approach, Highest delays and no concurrency, Test File Timing: 10050 ms)
 ```bash
 python scraper.py
 ```
-2) scraper-concurrent.py (Fastest, Upto 10 concurrent requests, No verbose output, Test File Timing:  ~18ms)
+2) scraper-concurrent.py (Fastest, Upto 10 concurrent requests, No verbose output, Test File Timing:  29 ms)
 ```bash
 python scraper-concurrent.py
 ```
-3) scraper-concurrent-debug-verbose.py (Same as scraper-concurrent but slower due to console output, Test File Timing: ~35ms)
+3) scraper-concurrent-debug-verbose.py (Same as scraper-concurrent but slower due to console output, Test File Timing: 47 ms)
 ```bash
 python scraper-concurrrent-debug-verbose.py
 ```
+Note: Script runtimes may vary slightly depending on your hardware and UVIC server loads.
+
+### Performance Metrics
+
+<img src="https://raw.githubusercontent.com/tanujdargan/scraper-uvic-data/main/Script-Runtime.png?raw=true" alt="Performance Logs" width="400"/>
 
 ### Running the Script
 
