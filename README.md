@@ -52,8 +52,18 @@ Use the test file for development otherwise leave it as is.
 
 Navigate to the directory containing the script and run the script using Python:
 
+##### There are 3 main scraper scripts:
+1) scraper.py (Slowest, Conservative approach, Highest delays and no concurrency)
 ```bash
 python scraper.py
+```
+2) scraper-concurrent.py (Fastest, Upto 10 concurrent requests, No verbose output, Test File Timing:  ~18ms)
+```bash
+python scraper-concurrent.py
+```
+3) scraper-concurrent-debug-verbose.py (Same as scraper-concurrent but slower due to console output, Test File Timing: ~35ms)
+```bash
+python scraper-concurrrent-debug-verbose.py
 ```
 
 ### Running the Script
