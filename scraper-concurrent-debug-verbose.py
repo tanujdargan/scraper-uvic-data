@@ -43,7 +43,7 @@ def parse_html(html_content, term, subject, course_number):
             'course_name': '',
             'course_number': course_number,
             'crn': '',
-            'section': '',
+            'section': '',  # Added 'section' field
             'frequency': '',
             'time': '',
             'days': '',
@@ -56,13 +56,24 @@ def parse_html(html_content, term, subject, course_number):
             'additional_information': ''
         }
         
-        # Extract course name, CRN, and section
+        # Extract course title
         title = section.find('a').text.strip()
+        
+        # Updated parsing logic for title
+        # Expected format: 'Course Name - CRN - Subject Code Course Number - Section'
         title_parts = title.split(' - ')
-        if len(title_parts) >= 3:
+        if len(title_parts) >= 4:
             course_info['course_name'] = title_parts[0].strip()
             course_info['crn'] = title_parts[1].strip()
-            course_info['section'] = title_parts[2].strip()
+            # Split 'Subject Code Course Number' to get subject and course number if needed
+            subject_course = title_parts[2].strip()
+            sc_parts = subject_course.split(' ')
+            if len(sc_parts) >= 2:
+                course_info['subject'] = sc_parts[0].strip()
+                course_info['course_number'] = sc_parts[1].strip()
+            else:
+                print(f"Unexpected subject and course number format: {subject_course}", flush=True)
+            course_info['section'] = title_parts[3].strip()
         else:
             print(f"Unexpected title format for {subject} {course_number}: {title}", flush=True)
             continue  # Skip this course if the format is unexpected
@@ -141,11 +152,11 @@ def save_to_csv(courses, filename):
 async def main():
     start_time = time.time()
     print("Script started.", flush=True)
-    terms = ['202409', '202501']
+    terms = ['202409', '202501']  # Update terms as needed
     all_courses = []
     
     # Read the courses-list.csv file
-    with open('courses-list-test.csv', 'r', encoding='utf-8') as csvfile:
+    with open('courses-list.csv', 'r', encoding='utf-8') as csvfile:
         reader = csv.DictReader(csvfile)
         courses_list = list(reader)
     
