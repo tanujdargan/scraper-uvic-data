@@ -1,126 +1,105 @@
+import requests
+import json
 import pandas as pd
-from selenium import webdriver
-from selenium.webdriver.chrome.options import Options
-from selenium.webdriver.common.by import By
+from bs4 import BeautifulSoup
 import time
+from concurrent.futures import ThreadPoolExecutor, as_completed
 
-# Load your CSV file with course details
-file_path = 'courses-list.csv'
-courses_df = pd.read_csv(file_path)
+# Function to process a single course
+def process_course(course):
+    pid = course.get('pid')
+    subject_code = course.get('subjectCode', {}).get('name', '')
+    course_id = course.get('__catalogCourseId', '')
+    title = course.get('title', '')
 
-# Verify the columns in your CSV file
-print("Columns in CSV file:", courses_df.columns)
+    print(f"Processing Course ID: {course_id}, PID: {pid}")
 
-# Assuming your CSV has columns 'Subject' and 'Course Number'
-if 'Subject' in courses_df.columns and 'Course Number' in courses_df.columns:
-    # Remove any leading/trailing whitespace from Subject and Course Number
-    courses_df['Subject'] = courses_df['Subject'].astype(str).str.strip().str.upper()
-    courses_df['Course Number'] = courses_df['Course Number'].astype(str).str.strip().str.upper()
+    # Construct the API URL
+    api_url = f"https://uvic.kuali.co/api/v1/catalog/course/65eb47906641d7001c157bc4/{pid}"
+    try:
+        # Fetch the course details
+        response = requests.get(api_url)
+        if response.status_code == 200:
+            course_detail = response.json()
 
-    # Combine Subject and Course Number to create Course Codes
-    courses_df['Course Code'] = courses_df['Subject'] + ' ' + courses_df['Course Number']
+            # Extract fields from the course detail
+            description_html = course_detail.get('description', '')
+            # Use BeautifulSoup to remove HTML tags
+            description = BeautifulSoup(description_html, 'html.parser').get_text(separator=' ', strip=True)
 
-    # Configure Selenium WebDriver
-    options = Options()
-    options.headless = False  # Set to False to see the browser actions for debugging
-    driver = webdriver.Chrome(options=options)  # Ensure chromedriver is in your PATH
+            # Collect other fields as needed
+            credits = course_detail.get('credits', {}).get('value', '')
 
-    # Function to scrape course details using Selenium
-    def scrape_course_details(subject, course_number):
-        course_code = f"{subject} {course_number}"
-        print(f"Processing Course Code: {course_code}")
+            # Handle prerequisites and corequisites
+            pre_and_corequisites = course_detail.get('preAndCorequisites', '')
 
-        # Open the main courses page
-        driver.get("https://www.uvic.ca/calendar/undergrad/index.php#/courses")
-        time.sleep(5)  # Wait for the page to load completely
+            if isinstance(pre_and_corequisites, dict):
+                pre_requisites = pre_and_corequisites.get('rulesText', '')
+            elif isinstance(pre_and_corequisites, str):
+                pre_requisites = BeautifulSoup(pre_and_corequisites, 'html.parser').get_text(separator=' ', strip=True)
+            else:
+                pre_requisites = ''
 
-        try:
-            # Wait and click on the 'Accept all cookies' button if it appears
-            try:
-                accept_cookies_button = driver.find_element(By.XPATH, "//button[contains(text(), 'Accept all cookies')]")
-                accept_cookies_button.click()
-                time.sleep(1)  # Wait for the modal to close
-            except:
-                pass  # If the button isn't found, continue
+            corequisites = course_detail.get('corequisites', '')
+            if isinstance(corequisites, dict):
+                corequisites_text = corequisites.get('rulesText', '')
+            elif isinstance(corequisites, str):
+                corequisites_text = BeautifulSoup(corequisites, 'html.parser').get_text(separator=' ', strip=True)
+            else:
+                corequisites_text = ''
 
-            # Scroll to the subject code
-            subject_element = driver.find_element(By.XPATH, f"//div[@class='subject-code' and text()='{subject}']")
-            driver.execute_script("arguments[0].scrollIntoView({behavior: 'smooth', block: 'center'});", subject_element)
-            time.sleep(1)  # Wait for scrolling
+            # Recommendations and notes
+            recommendations_html = course_detail.get('recommendations', '')
+            recommendations = BeautifulSoup(recommendations_html, 'html.parser').get_text(separator=' ', strip=True)
 
-            # Click on the subject to expand the list of courses
-            subject_element.click()
-            time.sleep(2)  # Wait for the courses to load
+            notes_html = course_detail.get('supplementalNotes', '')
+            notes = BeautifulSoup(notes_html, 'html.parser').get_text(separator=' ', strip=True)
 
-            # Scroll to the course
-            course_element = driver.find_element(By.XPATH, f"//div[@class='course-code' and text()='{course_code}']")
-            driver.execute_script("arguments[0].scrollIntoView({behavior: 'smooth', block: 'center'});", course_element)
-            time.sleep(1)  # Wait for scrolling
-
-            # Click on the course to view details
-            course_element.click()
-            time.sleep(3)  # Wait for the course details to load
-
-            # Switch to the course details iframe
-            # Note: The course details may be loaded in an iframe or modal. Adjust accordingly.
-
-            # Extract the description
-            try:
-                description_element = driver.find_element(By.XPATH, "//div[@class='course-description']")
-                description = description_element.text.strip()
-            except:
-                description = 'Description not available'
-
-            # Extract the notes
-            try:
-                notes_element = driver.find_element(By.XPATH, "//div[@class='course-notes']")
-                notes = notes_element.text.strip()
-            except:
-                notes = 'Notes not available'
-
-            print(f"Extracted Description: {description}")
-            print(f"Extracted Notes: {notes}")
-
-            return {
-                'Subject': subject,
-                'Course Number': course_number,
-                'Course Code': course_code,
+            # Create a dictionary for the course data
+            course_data = {
+                'PID': pid,
+                'Course ID': course_id,
+                'Subject Code': subject_code,
+                'Title': title,
                 'Description': description,
+                'Credits': credits,
+                'Prerequisites': pre_requisites,
+                'Corequisites': corequisites_text,
+                'Recommendations': recommendations,
                 'Notes': notes
             }
 
-        except Exception as e:
-            print(f"Error processing course {course_code}: {e}")
-            return {
-                'Subject': subject,
-                'Course Number': course_number,
-                'Course Code': course_code,
-                'Description': 'Error retrieving data',
-                'Notes': 'Error retrieving data'
-            }
+            return course_data
+        else:
+            print(f"Failed to retrieve data for Course ID: {course_id}, PID: {pid}. Status code: {response.status_code}")
+            return None
+    except Exception as e:
+        print(f"Error processing Course ID: {course_id}, PID: {pid}. Error: {e}")
+        return None
 
-    # List to store the scraped data
-    scraped_data = []
+# Load the courses data from the JSON file
+with open('courses_list.json', 'r', encoding='utf-8') as f:
+    courses_list = json.load(f)
 
-    # Iterate over each course code in your DataFrame
-    for index, row in courses_df.iterrows():
-        subject = row['Subject']
-        course_number = row['Course Number']
-        course_data = scrape_course_details(subject, course_number)
-        scraped_data.append(course_data)
+# List to store the processed course data
+course_data_list = []
 
-    # Close the WebDriver
-    driver.quit()
+# Implement concurrency using ThreadPoolExecutor
+num_workers = 10  # Adjust the number of workers as needed
 
-    # Convert scraped data to a DataFrame and save to CSV
-    scraped_df = pd.DataFrame(scraped_data)
-    scraped_df.to_csv('scraped_course_details.csv', index=False)
+with ThreadPoolExecutor(max_workers=num_workers) as executor:
+    future_to_course = {executor.submit(process_course, course): course for course in courses_list}
 
-    print("Scraping complete. Data saved to 'scraped_course_details.csv'.")
+    for future in as_completed(future_to_course):
+        course_data = future.result()
+        if course_data:
+            course_data_list.append(course_data)
+        else:
+            # Handle courses that failed to process
+            pass
 
-else:
-    print("Error: 'Subject' and/or 'Course Number' columns not found in CSV file.")
-    print("Available columns:", courses_df.columns)
-    # Handle the error or exit the script
-    import sys
-    sys.exit(1)
+# Convert the list of course data to a DataFrame and save to CSV
+df = pd.DataFrame(course_data_list)
+df.to_csv('scraped_course_data.csv', index=False, encoding='utf-8')
+
+print("Data saved to 'courses_data.csv'")

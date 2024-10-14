@@ -1,0 +1,82 @@
+[
+    {
+        "__catalogCourseId": "ACAN225",
+        "__passedCatalogQuery": true,
+        "dateStart": "2020-09-01",
+        "pid": "ByS23Pp7E",
+        "id": "5db741705909cd24002e8ffe",
+        "title": "Introduction to the Arts of Canada",
+        "subjectCode": {
+            "name": "ACAN",
+            "description": "Arts of Canada (ACAN)",
+            "id": "5c13eaabd4a3fd2400db4b65",
+            "linkedGroup": "5c3e3019ae5f597107bbf808"
+        },
+        "catalogActivationDate": "2020-05-15",
+        "_score": 1
+    },
+    {
+        "__catalogCourseId": "ADMN200",
+        "__passedCatalogQuery": true,
+        "dateStart": "2020-01-01",
+        "pid": "SJ822w6XV",
+        "id": "5e4ee25f0325012500f6d1de",
+        "title": "International Community Development Through Capacity Building",
+        "subjectCode": {
+            "name": "ADMN",
+            "description": "Public Administration (ADMN)",
+            "id": "5c13f149185fc42400eea048",
+            "linkedGroup": "5bca4f1d1add8e000113d7b3"
+        },
+        "catalogActivationDate": "2019-11-15",
+        "_score": 1
+    },
+    {
+        "__catalogCourseId": "ADMN201",
+        "__passedCatalogQuery": true,
+        "dateStart": "2022-09-02",
+        "pid": "HJJ9AEdDK",
+        "id": "618abe87907d64d05b17b40d",
+        "title": "Social-Ecological Justice and Action for Planetary Health",
+        "subjectCode": {
+            "name": "ADMN",
+            "description": "Public Administration (ADMN)",
+            "id": "5c13f149185fc42400eea048",
+            "linkedGroup": "5bca4f1d1add8e000113d7b3"
+        },
+        "catalogActivationDate": "2022-09-01",
+        "_score": 1
+    },
+    {
+        "__catalogCourseId": "ADMN310",
+        "__passedCatalogQuery": true,
+        "dateStart": "2021-05-03",
+        "pid": "Bkxdh3vp7N",
+        "id": "5f3d9e6fd17a290026e5b4db",
+        "title": "Public Sector Economics",
+        "subjectCode": {
+            "name": "ADMN",
+            "description": "Public Administration (ADMN)",
+            "id": "5c13f149185fc42400eea048",
+            "linkedGroup": "5bca4f1d1add8e000113d7b3"
+        },
+        "catalogActivationDate": "2021-02-15",
+        "_score": 1
+    },
+    {
+        "__catalogCourseId": "WRIT491",
+        "__passedCatalogQuery": true,
+        "dateStart": "2020-01-01",
+        "pid": "By7ubt6QV",
+        "id": "5d1f6813d2bc1524008cab95",
+        "title": "Directed Studies in Writing",
+        "subjectCode": {
+            "name": "WRIT",
+            "description": "Writing (WRIT)",
+            "id": "5c14058c3d3a332600768baa",
+            "linkedGroup": "5bca567d7470c1000123af69"
+        },
+        "catalogActivationDate": "2019-11-15",
+        "_score": 1
+    }
+]
