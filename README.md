@@ -4,7 +4,7 @@
 
 A Python script to scrape course information from the University of Victoria's Class Schedule Listing - BAN1P. The script fetches and parses course data, including details like term, subject, course name, course number, CRN, section, schedule, instructor, instructional method, units, and additional information. It is designed to help students and developers access and utilize course information programmatically.
 
-**Note:** This script currently uses the Class Schedule Listing - BAN1P and will soon incorporate class information such as capacity and waitlist information using Detailed Class Information.
+**Note:** This script currently uses the Class Schedule Listing - BAN1P and will soon incorporate capacity and waitlist information.
 
 ## Table of Contents
 
@@ -100,6 +100,20 @@ The output will be saved in a CSV file named `scraped_course_data.csv`, containi
 - `instructional_method`
 - `units`
 - `additional_information`
+
+## Detailed Course Information/Calendar Scraper
+
+#### Kuali Course Information: https://uvic.kuali.co/api/v1/catalog/courses/65eb47906641d7001c157bc4/
+
+To get a specific course's information, the request must be modified:
+- Change 'courses' to 'course'
+- Add /pid
+- pid's can be found in the Course Information Page
+https://uvic.kuali.co/api/v1/catalog/course/65eb47906641d7001c157bc4/<pid>
+
+For Detailed Course Information, the scraper for UVIC Undergraduate Calendar can be found here: `./description/scraper-calendar.py`
+
+To run the scraper, you will need to download course information as a json file from here [Kuali Course Information](https://uvic.kuali.co/api/v1/catalog/courses/65eb47906641d7001c157bc4/).
 
 ## Development
 
