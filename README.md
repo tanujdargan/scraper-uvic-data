@@ -1,40 +1,40 @@
-# scraper-uvic-data
+## Overview
 
-# Course Data Scraper
+A Python script designed to scrape course information from the University of Victoria's Class Schedule Listing (BAN1P). The script fetches and parses key course data, such as term, subject, course name, course number, CRN, section, schedule, instructor, instructional method, units, and additional information. It helps students and developers access course information programmatically.
 
-A Python script to scrape course information from the University of Victoria's Class Schedule Listing - BAN1P. The script fetches and parses course data, including details like term, subject, course name, course number, CRN, section, schedule, instructor, instructional method, units, and additional information. It is designed to help students and developers access and utilize course information programmatically.
-
-**Note:** This script currently uses the Class Schedule Listing - BAN1P and will soon incorporate capacity and waitlist information.
+**Note:** Currently, the script scrapes data from the Class Schedule Listing (BAN1P) for most data. The UVIC Calendar is only used for additional course information (description, notes, pre-requisites, recommendations)
 
 ## Table of Contents
 
-- [Installation / Setup](#installation--setup)
+- [Installation & Setup](#installation--setup)
 - [Usage](#usage)
+- [Performance Metrics](#performance-metrics)
+- [Output](#output)
+- [Detailed Course Information Scraper](#detailed-course-information-scraper)
+- [Seat Capacity Data](#seat-capacity-data)
 - [Development](#development)
 - [Contributing](#contributing)
+- [Planned Features](#planned-features)
+- [Contact](#contact)
 
-## Installation / Setup
+## Installation & Setup
 
 ### Prerequisites
 
-#### Note: This script was developed and tested on Python 3.12.2 compatibility is not guaranteed on other versions. Although there should be no issues with future or older versions of python.
-
-- **Python 3.x** installed on your system.
-- Required Python packages:
+- **Python 3.12.2:** Compatibility is tested with Python 3.12.2. While there should be no issues with older or newer versions, compatibility is not guaranteed.
+- **Required Packages:**
   - `requests`
   - `beautifulsoup4`
-
-If you wish to use concurrent requests then you will also need to do `pip install aiohttp`
-
-You can install the required packages using pip:
+  
+  If you plan to use concurrent requests, you will also need `aiohttp`. You can install the required packages using:
 
 ```bash
-pip install requests beautifulsoup4
+pip install requests beautifulsoup4 aiohttp
 ```
 
 ### Clone the Repository
 
-Clone this repository to your local machine using:
+To clone the repository, run:
 
 ```bash
 git clone https://github.com/yourusername/scraper-uvic-data.git
@@ -42,106 +42,98 @@ git clone https://github.com/yourusername/scraper-uvic-data.git
 
 ### Prepare the Input File
 
-A CSV file named `./courses-list.csv` and `./data/course-list-test.csv` are used to generate the urls and scrape the data respectively:
+Ensure the input CSV files are in place:
+- `./courses-list.csv`: Used to generate URLs for scraping.
+- `./data/course-list-test.csv`: A test file for development purposes.
+
+Format of the CSV:
 
 ```csv
 UVIC Course Description, Subject, Course Number, Course Name
 ```
 
-Use the test file for development otherwise leave it as is.
+For development, use the test file. Otherwise, leave the default file as is.
 
 ## Usage
 
-Navigate to the directory containing the script and run the script using Python:
+Navigate to the directory containing the script and run one of the following scraper scripts based on your needs:
 
-##### There are 3 main scraper scripts:
-1) scraper.py (Slowest, Conservative approach, Highest delays and no concurrency, Test File Timing: 10050 ms)
-```bash
-python scraper.py
-```
-2) scraper-concurrent.py (Fastest, Upto 10 concurrent requests, No verbose output, Test File Timing:  29 ms)
-```bash
-python scraper-concurrent.py
-```
-3) scraper-concurrent-debug-verbose.py (Same as scraper-concurrent but slower due to console output, Test File Timing: 47 ms)
-```bash
-python scraper-concurrrent-debug-verbose.py
-```
-Note: Script runtimes may vary slightly depending on your hardware and UVIC server loads.
+1) **scraper.py** (Conservative approach, no concurrency, slowest):
+   ```bash
+   python scraper.py
+   ```
+   *Test File Timing: 10,050 ms*
+
+2) **scraper-concurrent.py** (Fastest, up to 10 concurrent requests, no verbose output):
+   ```bash
+   python scraper-concurrent.py
+   ```
+   *Test File Timing: 29 ms*
+
+3) **scraper-concurrent-debug-verbose.py** (Same as concurrent, but includes verbose console output):
+   ```bash
+   python scraper-concurrent-debug-verbose.py
+   ```
+   *Test File Timing: 47 ms*
+
+*Note: Script runtimes may vary based on hardware and UVIC server load.*
 
 ### Performance Metrics
 
 <img src="https://raw.githubusercontent.com/tanujdargan/scraper-uvic-data/main/Script-Runtime.png?raw=true" alt="Performance Logs" width="400"/>
 
-### Running the Script
+## Output
 
-- The script will iterate through the terms and courses specified in the `courses-list.csv` file.
-- It will fetch and parse course data, then save the results to `scraped_course_data.csv`.
-- The script includes functionality to stop the scraping process at any time by pressing the `q` key.
-- At the end of the execution, the script will display the total execution time.
+The scraped course data will be saved in `scraped_course_data.csv`, with columns such as:
+- `term`, `subject`, `course_name`, `course_number`, `crn`, `section`, `schedule`, `instructor`, `instructional_method`, `units`, and `additional_information`.
 
-### Output
+You can stop the script at any time by pressing the `q` key.
 
-The output will be saved in a CSV file named `scraped_course_data.csv`, containing the following columns:
+## Detailed Course Information Scraper
 
-- `term`
-- `subject`
-- `course_name`
-- `course_number`
-- `crn`
-- `section`
-- `frequency`
-- `time`
-- `days`
-- `location`
-- `date_range`
-- `schedule_type`
-- `instructor`
-- `instructional_method`
-- `units`
-- `additional_information`
+To fetch detailed course information from the UVIC Undergraduate Calendar, use the scraper located at `./description/scraper-calendar.py`.
 
-## Detailed Course Information/Calendar Scraper
+Download the course information as a JSON file from the following Kuali link before running the scraper:
+- [Kuali Course Information](https://uvic.kuali.co/api/v1/catalog/courses/65eb47906641d7001c157bc4/)
 
-#### Kuali Course Information: https://uvic.kuali.co/api/v1/catalog/courses/65eb47906641d7001c157bc4/
+To fetch individual course information, modify the request URL by appending the course's `pid` to the endpoint.
 
-To get a specific course's information, the request must be modified:
-- Change 'courses' to 'course'
-- Add /pid
-- pid's can be found in the Course Information Page
-https://uvic.kuali.co/api/v1/catalog/course/65eb47906641d7001c157bc4/<pid>
+## Seat Capacity Data
 
-For Detailed Course Information, the scraper for UVIC Undergraduate Calendar can be found here: `./description/scraper-calendar.py`
+A separate script for scraping seat capacity data is available, though it is inefficient due to frequent data changes. Automating this process can be resource-intensive and inaccurate over time.
 
-To run the scraper, you will need to download course information as a json file from here [Kuali Course Information](https://uvic.kuali.co/api/v1/catalog/courses/65eb47906641d7001c157bc4/).
+The seat capacity scraper is located under `./seat-capacity`, and the initial scraped data (as of 15/10/2024) is available in the corresponding CSV.
+
+Script execution time:
+```bash
+Completed 5321/5321 tasks.
+Data saved to course_capacity_data.csv.
+Execution time: 00:03:27.49
+```
 
 ## Development
 
-This script is open for development and improvement. Feel free to fork the repository, make changes, and contribute back.
+This project is open for improvements. Feel free to fork the repository, make changes, and submit pull requests.
 
 ### Future Enhancements
 
-- Incorporate class information such as capacity and waitlist details using Detailed Class Information.
-- Optimize performance and efficiency.
+- Adding class capacity and waitlist data.
+- Improving performance and optimization.
 
-### Contributing
+## Contributing
 
-Contributions are welcome! Here's how you can help:
+Contributions are welcome! Here's how to contribute:
 
-1. **Fork the repository** on GitHub.
+1. **Fork the repository**.
 2. **Clone your fork** locally.
-3. **Create a branch** for your feature or fix
+3. **Create a feature branch** for your changes.
+4. Submit a **pull request** with your improvements.
 
----
+## Planned Features
 
-**Disclaimer:** This script is intended for educational and personal use. Please ensure compliance with the University of Victoria's policies and guidelines when accessing and using their data.
+- Integration of seat capacity and waitlist data.
+- API implementation for regular data updates and MongoDB integration.
 
-**Contact:** If you have any questions or suggestions, feel free to reach out over email or open an issue on GitHub.
+## Contact
 
-# Questions or Feedback
-
-If you encounter any issues or have suggestions for improvement, please open an issue in this repository or contact me.
-
-# Planned Features
-- Adding seat capacity and waitlist data
-- Creating an api that checks for updates regularly and updates the MongoDB database respectively
+For questions or feedback, please open an issue in this repository or reach out via email.
