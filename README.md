@@ -3,6 +3,7 @@
 A Python script designed to scrape course information from the University of Victoria's Class Schedule Listing (BAN1P). The script fetches and parses key course data, such as term, subject, course name, course number, CRN, section, schedule, instructor, instructional method, units, and additional information. It helps students and developers access course information programmatically.
 
 **Note:** Currently, the script scrapes data from the Class Schedule Listing (BAN1P) for most data. The UVIC Calendar is only used for additional course information (description, notes, pre-requisites, recommendations)
+Update: As of last November 27, 2024, UVIC updated BAN1P and data cannot be scraped anymore as it is now behind an authentication layer with Netlink. Active class data cannot be scraped anymore, generic information is available on UVIC Calendar and the calendar scraper still works.
 
 ## Table of Contents
 
